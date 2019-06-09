@@ -118,16 +118,53 @@ class Board(object):
                 attempts -= 1
             to_remove -= 1
 
-def draw_matrix(grid, name):
-    image = Image.new(mode='L', size=(450, 450), color=255)
+    def solution_img(self, name):
+        solved = self.solution()
+        image = draw_matrix(self.grid)
+        font = ImageFont.truetype('Hack.ttf', size=45)
+        step_size = int(image.width/9)
+        draw = ImageDraw.Draw(image)
+        for i in range(9):
+            for j in range(9):
+                if solved[i,j] != self.grid[i,j]:
+                    item = solved[i,j]
+                    x = i*step_size + 10
+                    y = j*step_size
+                    if item == 0:
+                        item = ' '
+                    draw.text((x,y),str(item), font=font, fill=(255,0,0))
+        if name:
+            image.save(name)
+
+
+
+
+def draw_matrix(grid, name=False, size=450):
+    image = draw_empty_grid(size)
     font = ImageFont.truetype('Hack.ttf', size=45)
+    step_size = int(image.width/9)
+    draw = ImageDraw.Draw(image)
+    for i in range(9):
+        for j in range(9):
+            item = grid[i,j]
+            x = i*step_size + 10
+            y = j*step_size
+            if item == 0:
+                item = ' '
+            draw.text((x,y),str(item), font=font, fill=(0,0,0))
+    if name:
+        image.save(name)
+    return image
+
+
+def draw_empty_grid(size):
+    image = Image.new(mode='RGB', size=(size, size), color=(255,255,255))
     draw = ImageDraw.Draw(image)
     y_start = 0
     y_end = image.height
     x_start = 0
     x_end = image.width
     step_size = int(image.width/9)
-
     for x in range(0, image.width, step_size):
         line = ((x, y_start), (x, y_end))
         draw.line(line, fill=0)
@@ -147,16 +184,8 @@ def draw_matrix(grid, name):
         draw.line(line, fill=0)
         line = ((x_start, y+1), (x_end, y+1))
         draw.line(line, fill=0)
+    return image
 
-    for i in range(9):
-        for j in range(9):
-            item = grid[i,j]
-            x = i*step_size + 10
-            y = j*step_size
-            if item == 0:
-                item = ' '
-            draw.text((x,y),str(item),font=font)
-    image.save(name)
 
 
 
@@ -176,5 +205,4 @@ if __name__ == '__main__':
     B.prepare(2, to_remove=50)
     draw_matrix(B.grid, 'puzzle.png')
     if args.solution:
-        B.solve()
-        draw_matrix(B.grid, 'solution.png')
+        B.solution_img('solution.png')
