@@ -119,8 +119,8 @@ class Board(object):
             to_remove -= 1
 
 def draw_matrix(grid, name):
-    image = Image.new(mode='L', size=(270, 270), color=255)
-    font = ImageFont.truetype('Hack.ttf', size=25)
+    image = Image.new(mode='L', size=(450, 450), color=255)
+    font = ImageFont.truetype('Hack.ttf', size=45)
     draw = ImageDraw.Draw(image)
     y_start = 0
     y_end = image.height
@@ -151,8 +151,8 @@ def draw_matrix(grid, name):
     for i in range(9):
         for j in range(9):
             item = grid[i,j]
-            x = i*30 + 8
-            y = j*30
+            x = i*step_size + 10
+            y = j*step_size
             if item == 0:
                 item = ' '
             draw.text((x,y),str(item),font=font)
