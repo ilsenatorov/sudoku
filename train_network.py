@@ -7,61 +7,14 @@ from keras.models import Sequential, model_from_json
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
-from PIL import Image, ImageDraw, ImageFont
 import numpy as np
-from random import randint, choice
-from os import listdir
-import sys
-from sklearn.model_selection import train_test_split
-from tools import draw_matrix
-from image_recognition import get_grid
-from cv2 import imread, IMREAD_GRAYSCALE
-
-
-def generate_image():
-    ''' Generates a 28x28 image with a random digit 1-9, with slight degree of randomness'''
-    background = 0
-    image = Image.new(mode='L', size=(28, 28), color=background)
-    txt = Image.new(mode='L', size=(28,28), color=background)
-    draw = ImageDraw.Draw(txt)
-    x = randint(4,6)
-    y = randint(2,4)
-    num = randint(1,9)
-    fontsize = randint(26,28)
-    fill = randint(220,255)
-    angle = randint(-5,5)
-    # font = choice(listdir("fonts/"))
-    font = ImageFont.truetype('fonts/APHont-Bold_q15c.ttf', size=fontsize)
-    draw.text((x,y), str(num), font=font, fill=fill)
-    txt = txt.rotate(angle, expand=0)
-    image.paste(txt)
-    return np.asarray(image.getdata()), int(num)
-
-def generate_dataset(number):
-    ''' Generate a dataset of size _number_ with random images of digits '''
-    x_train = np.zeros((number,784))
-    y_train = np.zeros(number, int)
-    for i in range(number):
-        x, y = generate_image()
-        x_train[i] = x
-        y_train[i] = y
-    return x_train.reshape(number, 28, 28)/255, y_train
-
-def create_dataset(picfolder):
-    res = []
-    pics = sorted(listdir(picfolder))
-    for pic in pics:
-        img = imread(picfolder+pic, IMREAD_GRAYSCALE)
-        digits = get_grid(img, 'a', 'b', no_predict=True)
-        res.append(digits)
-    return np.asarray(res).reshape(8100,28,28)
-
+from tools import recover_dataset
 
 
 if __name__ == "__main__":
-    # import sys
+    import sys
     # x, y = generate_dataset(8100)
-    x = create_dataset('data1/')
+    x = recover_dataset('data1/')
     y = np.loadtxt('data1.csv', delimiter=',').astype(int).reshape(8100)
     break_point = 7000
     x_train = x[:break_point]

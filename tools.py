@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 from PIL import Image, ImageFont, ImageDraw
+from cv2 import imread, IMREAD_GRAYSCALE
+from random import randint
+import numpy as np
+from solver import Board
+from image_recognition import get_grid
+from os import listdir
 font = ImageFont.truetype('fonts/APHont-Regular_q15c.ttf', size=45)
 
 
@@ -69,3 +75,54 @@ def solution_img(solved, puzzle, name):
     if name:
         image.save(name)
 
+
+def generate_image():
+    ''' Generates a 28x28 image with a random digit 1-9, with slight degree of randomness'''
+    background = 0
+    image = Image.new(mode='L', size=(28, 28), color=background)
+    txt = Image.new(mode='L', size=(28,28), color=background)
+    draw = ImageDraw.Draw(txt)
+    x = randint(4,6)
+    y = randint(2,4)
+    num = randint(1,9)
+    fontsize = randint(26,28)
+    fill = randint(220,255)
+    angle = randint(-5,5)
+    # font = choice(listdir("fonts/"))
+    font = ImageFont.truetype('fonts/APHont-Bold_q15c.ttf', size=fontsize)
+    draw.text((x,y), str(num), font=font, fill=fill)
+    txt = txt.rotate(angle, expand=0)
+    image.paste(txt)
+    return np.asarray(image.getdata()), int(num)
+
+def generate_dataset(number):
+    ''' Generate a dataset of size _number_ with random images of digits '''
+    x_train = np.zeros((number, 784), int)
+    y_train = np.zeros(number, int)
+    for i in range(number):
+        x, y = generate_image()
+        x_train[i] = x
+        y_train[i] = y
+    return x_train.reshape(number, 28, 28), y_train
+
+def save_generated_dataset(folder, number):
+    y = np.zeros((number, 81), int)
+    for i in range(number):
+        picname = folder + 'orig/grid' + str(i).zfill(4) + '.png'
+        B = Board(9)
+        grid = B.solution()
+        draw_matrix(grid, picname)
+        y[i] = grid.reshape(81)
+    np.savetxt(folder+'data.csv', y, delimiter=',', fmt='%d')
+
+
+
+def recover_dataset(picfolder):
+    ''' From pictures of sudoku grids create the dataset '''
+    res = []
+    pics = sorted(listdir(picfolder))
+    for pic in pics:
+        img = imread(picfolder+pic, IMREAD_GRAYSCALE)
+        digits = get_grid(img, 'a', 'b', no_predict=True)
+        res.append(digits)
+    return np.asarray(res).reshape(8100,28,28)
