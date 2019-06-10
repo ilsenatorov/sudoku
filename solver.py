@@ -95,7 +95,7 @@ class Board(object):
         cp.solve()
         return cp.grid
 
-    def prepare(self, attempts, checks=1, to_remove=False):
+    def generate_puzzle(self, attempts, checks=1, to_remove=False):
         ''' Prepares the puzzle '''
         self.solve()
         if not to_remove:

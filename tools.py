@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 from PIL import Image, ImageFont, ImageDraw
+font = ImageFont.truetype('APHont-Bold_q15c.ttf', size=45)
+
 
 def draw_empty_grid(size):
     ''' Draw an empty grid '''
@@ -35,14 +37,13 @@ def draw_empty_grid(size):
 def draw_matrix(grid, name=False, size=450):
     ''' Create the image from grid '''
     image = draw_empty_grid(size)
-    font = ImageFont.truetype('Hack.ttf', size=45)
     step_size = int(image.width/9)
     draw = ImageDraw.Draw(image)
     for i in range(9):
         for j in range(9):
             item = grid[i,j]
             x = i*step_size + 10
-            y = j*step_size
+            y = j*step_size + 5
             if item == 0:
                 item = ' '
             draw.text((x,y),str(item), font=font, fill=(0,0,0))
@@ -54,15 +55,14 @@ def draw_matrix(grid, name=False, size=450):
 def solution_img(solved, puzzle, name):
     '''Creates an image with puzzle in black and solutions in red '''
     image = draw_matrix(puzzle)
-    font = ImageFont.truetype('Hack.ttf', size=45)
     step_size = int(image.width/9)
     draw = ImageDraw.Draw(image)
     for i in range(9):
         for j in range(9):
             if solved[i,j] != puzzle[i,j]:
                 item = solved[i,j]
-                x = i*step_size + 10
-                y = j*step_size
+                x = i*step_size + 12
+                y = j*step_size + 7
                 if item == 0:
                     item = ' '
                 draw.text((x,y),str(item), font=font, fill=(255,0,0))

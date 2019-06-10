@@ -162,12 +162,16 @@ def get_digits(img, squares, size):
 
 
 def predict(model, digit):
-    arr = np.array(digit).reshape((28,28,1))
-    arr = np.expand_dims(arr, axis=0)
+    ''' Using the model, predict which number the digit is '''
+    digit = np.asarray(digit)
+    digit = (digit/255)
+    arr = digit.reshape(1, 28, 28, 1)
     pred = model.predict(arr)
-    return int(np.where(pred == 1)[1]) + 1
+    pred = pred.argmax(axis=-1)
+    return pred + 1
 
 def get_grid(img, model):
+    ''' Predict all numbers in the grid '''
     processed = pre_process_image(img, dilate=True)
     corners = find_corners_of_largest_polygon(processed)
     cropped = crop_and_warp(img, corners)
