@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from random import randint, choice
 from os import listdir
+import sys
 from sklearn.model_selection import train_test_split
 from tools import draw_matrix
 from image_recognition import get_grid
@@ -59,12 +60,14 @@ def create_dataset(picfolder):
 
 if __name__ == "__main__":
     # import sys
+    # x, y = generate_dataset(8100)
     x = create_dataset('data1/')
     y = np.loadtxt('data1.csv', delimiter=',').astype(int).reshape(8100)
-    x_train, x_test = train_test_split(x, train_size=0.8)
-    y_train, y_test = train_test_split(y, train_size=0.8)
-    # x_train, y_train = generate_dataset(10000)
-    # x_test, y_test = generate_dataset(1000)
+    break_point = 7000
+    x_train = x[:break_point]
+    x_test = x[break_point:]
+    y_train = y[:break_point]
+    y_test = y[break_point:]
     y_train = y_train - 1
     y_test = y_test - 1
 
@@ -78,7 +81,7 @@ if __name__ == "__main__":
     x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
     x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
     input_shape = (img_rows, img_cols, 1)
-
+    # print(x_train.shape, y_train.shape)
     x_train = x_train.astype('float32')
     x_test = x_test.astype('float32')
     print('x_train shape:', x_train.shape)
@@ -95,7 +98,7 @@ if __name__ == "__main__":
                     input_shape=input_shape))
     model.add(Conv2D(64, (3, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.25))
     model.add(Flatten())
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.5))
