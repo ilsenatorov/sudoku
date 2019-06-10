@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from PIL import Image, ImageFont, ImageDraw
-font = ImageFont.truetype('APHont-Bold_q15c.ttf', size=45)
+font = ImageFont.truetype('fonts/APHont-Bold_q15c.ttf', size=45)
 
 
 def draw_empty_grid(size):

@@ -9,4 +9,5 @@
 *.json
 *.h5
 fonts/
+pics/
 *.ipynb

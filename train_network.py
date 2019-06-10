@@ -15,16 +15,19 @@ from os import listdir
 
 def generate_image():
     ''' Generates a 28x28 image with a random digit 1-9, with slight degree of randomness'''
-    image = Image.new(mode='L', size=(28, 28), color=0)
-    txt = Image.new(mode='L', size=(28,28), color=0)
+    background = 0
+    image = Image.new(mode='L', size=(28, 28), color=background)
+    txt = Image.new(mode='L', size=(28,28), color=background)
     draw = ImageDraw.Draw(txt)
+    x = randint(4,6)
+    y = randint(2,4)
     num = randint(1,9)
-    fontsize = randint(26,29)
-    fill = randint(0,50)
+    fontsize = randint(26,28)
+    fill = randint(220,255)
     angle = randint(-5,5)
-    font = choice(listdir("fonts/"))
-    font = ImageFont.truetype("fonts/" + font, size=fontsize)
-    draw.text((5,1), str(num), font=font, fill=255)
+    # font = choice(listdir("fonts/"))
+    font = ImageFont.truetype('fonts/APHont-Bold_q15c.ttf', size=fontsize)
+    draw.text((x,y), str(num), font=font, fill=fill)
     txt = txt.rotate(angle, expand=0)
     image.paste(txt)
     return np.asarray(image.getdata()), int(num)
@@ -40,9 +43,9 @@ def generate_dataset(number):
     return x_train.reshape(number, 28, 28)/255, y_train
 
 if __name__ == "__main__":
+    import sys
     x_train, y_train = generate_dataset(40000)
     x_test, y_test = generate_dataset(10000)
-    print(x_train[0])
     y_train = y_train - 1
     y_test = y_test - 1
 
@@ -73,7 +76,7 @@ if __name__ == "__main__":
                     input_shape=input_shape))
     model.add(Conv2D(64, (3, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    model.add(Dropout(0.5))
     model.add(Flatten())
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.5))
@@ -91,8 +94,8 @@ if __name__ == "__main__":
     score = model.evaluate(x_test, y_test, verbose=0)
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
-
     model_json = model.to_json()
-    with open("model.json", "w") as json_file:
+    model_name = sys.argv[1]
+    with open(model_name + ".json", "w") as json_file:
         json_file.write(model_json)
-    model.save_weights("model.h5")
+    model.save_weights(model_name + ".h5")
