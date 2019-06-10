@@ -170,7 +170,10 @@ def predict(model, digit):
     pred = pred.argmax(axis=-1)
     return pred + 1
 
-def get_grid(img, model):
+def predict_knn(model, digit):
+    return model.predict(digit.reshape(1,784))[0]
+
+def get_grid(img, model, method='knn'):
     ''' Predict all numbers in the grid '''
     processed = pre_process_image(img, dilate=True)
     corners = find_corners_of_largest_polygon(processed)
@@ -182,5 +185,9 @@ def get_grid(img, model):
         if digits[i].sum() != 0:
             x = i//9
             y = i%9
-            mat[y,x] = predict(model, digits[i])
+            if method == 'knn':
+                prediction = predict_knn(model, digits[i])
+            elif method == 'cnn':
+                prediction = predict(model, digits[i])
+            mat[y,x] = prediction
     return mat

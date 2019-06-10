@@ -5,6 +5,12 @@ from keras.models import model_from_json
 from cv2 import imread, IMREAD_GRAYSCALE
 from tools import solution_img, draw_matrix
 import sys
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+from train_network import generate_dataset
+
+
+
 
 task = sys.argv[1]
 
@@ -16,14 +22,14 @@ if task == 'generate':
     sys.exit()
 elif task == 'solve':
     img_loc = sys.argv[2]
-    model_name = sys.argv[3]
-    json_file = open(model_name + '.json', 'r')
-    loaded_model_json = json_file.read()
-    json_file.close()
-    model = model_from_json(loaded_model_json)
-    model.load_weights(model_name + '.h5')
     img = imread(img_loc, IMREAD_GRAYSCALE)
-    grid = get_grid(img, model)
+    scaler = StandardScaler()
+    classifier = KNeighborsClassifier(n_neighbors=3)
+    x_train, y_train = generate_dataset(250)
+    x_train = x_train.reshape(250,784)
+    scaler.fit(x_train)
+    classifier.fit(x_train, y_train)
+    grid = get_grid(img, classifier, method='knn')
     B = Board(9, grid)
     print(B.grid)
     solution_img(B.solution(), B.grid, 'solution.png')
