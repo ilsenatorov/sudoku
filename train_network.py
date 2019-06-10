@@ -11,6 +11,10 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from random import randint, choice
 from os import listdir
+from sklearn.model_selection import train_test_split
+from tools import draw_matrix
+from image_recognition import get_grid
+from cv2 import imread, IMREAD_GRAYSCALE
 
 
 def generate_image():
@@ -42,16 +46,31 @@ def generate_dataset(number):
         y_train[i] = y
     return x_train.reshape(number, 28, 28)/255, y_train
 
+def create_dataset(picfolder):
+    res = []
+    pics = sorted(listdir(picfolder))
+    for pic in pics:
+        img = imread(picfolder+pic, IMREAD_GRAYSCALE)
+        digits = get_grid(img, 'a', 'b', no_predict=True)
+        res.append(digits)
+    return np.asarray(res).reshape(8100,28,28)
+
+
+
 if __name__ == "__main__":
-    import sys
-    x_train, y_train = generate_dataset(40000)
-    x_test, y_test = generate_dataset(10000)
+    # import sys
+    x = create_dataset('data1/')
+    y = np.loadtxt('data1.csv', delimiter=',').astype(int).reshape(8100)
+    x_train, x_test = train_test_split(x, train_size=0.8)
+    y_train, y_test = train_test_split(y, train_size=0.8)
+    # x_train, y_train = generate_dataset(10000)
+    # x_test, y_test = generate_dataset(1000)
     y_train = y_train - 1
     y_test = y_test - 1
 
     batch_size = 128
     num_classes = 9 # Because we have no zeros
-    epochs = 2
+    epochs = 10
 
     # input image dimensions
     img_rows, img_cols = 28, 28
@@ -95,7 +114,7 @@ if __name__ == "__main__":
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
     model_json = model.to_json()
-    model_name = sys.argv[1]
+    model_name = 'models/' +  sys.argv[1]
     with open(model_name + ".json", "w") as json_file:
         json_file.write(model_json)
     model.save_weights(model_name + ".h5")

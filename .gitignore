@@ -12,3 +12,6 @@ fonts/
 pics/
 models/
 *.ipynb
+*.jpg
+*.jpeg
+*.csv

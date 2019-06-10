@@ -173,13 +173,15 @@ def predict(model, digit):
 def predict_knn(model, digit):
     return model.predict(digit.reshape(1,784))[0]
 
-def get_grid(img, model, method):
+def get_grid(img, model, method, no_predict=False):
     ''' Predict all numbers in the grid '''
     processed = pre_process_image(img, dilate=True)
     corners = find_corners_of_largest_polygon(processed)
     cropped = crop_and_warp(img, corners)
     squares = infer_grid(cropped)
     digits = get_digits(cropped, squares, 28)
+    if no_predict:
+        return digits
     mat = np.zeros((9,9), int)
     for i in range(81):
         if digits[i].sum() != 0:
