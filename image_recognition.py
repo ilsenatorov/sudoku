@@ -173,7 +173,7 @@ def predict(model, digit):
 def predict_knn(model, digit):
     return model.predict(digit.reshape(1,784))[0]
 
-def get_grid(img, model, method='knn'):
+def get_grid(img, model, method):
     ''' Predict all numbers in the grid '''
     processed = pre_process_image(img, dilate=True)
     corners = find_corners_of_largest_polygon(processed)

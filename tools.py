@@ -68,3 +68,4 @@ def solution_img(solved, puzzle, name):
                 draw.text((x,y),str(item), font=font, fill=(255,0,0))
     if name:
         image.save(name)
+
