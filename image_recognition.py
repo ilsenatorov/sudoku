@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+''' Library of functions used for extracting sudoku grid from an image
+and extracting the digits from the grid. Uses OpenCV2 and numpy '''
 import cv2
 import operator
 import numpy as np

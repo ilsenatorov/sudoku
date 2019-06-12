@@ -11,28 +11,28 @@ font = ImageFont.truetype('fonts/APHont-Regular_q15c.ttf', size=45)
 
 def draw_empty_grid(size):
     ''' Draw an empty grid '''
-    image = Image.new(mode='RGB', size=(size, size), color=(255,255,255))
+    image = Image.new(mode='RGB', size=(size+3, size+3), color=(255,255,255))
     draw = ImageDraw.Draw(image)
     y_start = 0
-    y_end = image.height
+    y_end = size+2
     x_start = 0
-    x_end = image.width
-    step_size = int(image.width/9)
-    for x in range(0, image.width, step_size):
+    x_end = size+2
+    step_size = int(size/9)
+    for x in range(1, size+2, step_size):
         line = ((x, y_start), (x, y_end))
         draw.line(line, fill=0)
 
-    for y in range(0, image.height, step_size):
+    for y in range(1, size+2, step_size):
         line = ((x_start, y), (x_end, y))
         draw.line(line, fill=0)
 
-    for x in range(0, image.width, step_size*3): # Thick lines
+    for x in range(1, size+2, step_size*3): # Thick lines
         line = ((x-1, y_start), (x-1, y_end))
         draw.line(line, fill=0)
         line = ((x+1, y_start), (x+1, y_end))
         draw.line(line, fill=0)
 
-    for y in range(0, image.height, step_size*3): # Thick lines
+    for y in range(1, size+2, step_size*3): # Thick lines
         line = ((x_start, y-1), (x_end, y-1))
         draw.line(line, fill=0)
         line = ((x_start, y+1), (x_end, y+1))
@@ -40,7 +40,7 @@ def draw_empty_grid(size):
     return image
 
 
-def draw_matrix(grid, name=False, size=450):
+def draw_matrix(grid, name=False, size=450, frame=False, font=font):
     ''' Create the image from grid '''
     image = draw_empty_grid(size)
     step_size = int(image.width/9)
@@ -53,6 +53,10 @@ def draw_matrix(grid, name=False, size=450):
             if item == 0:
                 item = ' '
             draw.text((x,y),str(item), font=font, fill=(0,0,0))
+    if frame:
+        newimg = Image.new(mode='L', size=(size+13, size+13), color=255)
+        newimg.paste(image, (5,5))
+        image = newimg
     if name:
         image.save(name)
     return image
@@ -105,13 +109,17 @@ def generate_dataset(number):
         y_train[i] = y
     return x_train.reshape(number, 28, 28), y_train
 
-def save_generated_dataset(folder, number):
+def save_generated_dataset(folder, number, font=font):
+    ''' Save <number> of pictures in the given <folder>s orig subfolder and data as data.csv '''
     y = np.zeros((number, 81), int)
     for i in range(number):
         picname = folder + 'orig/grid' + str(i).zfill(4) + '.png'
         B = Board(9)
         grid = B.solution()
-        draw_matrix(grid, picname)
+        if i % 2 == 1:
+            draw_matrix(grid, picname, frame=True, font=ImageFont.truetype('fonts/arial.ttf', size=45))
+        else:
+            draw_matrix(grid, picname, frame=True, font=font)
         y[i] = grid.reshape(81)
     np.savetxt(folder+'data.csv', y, delimiter=',', fmt='%d')
 
@@ -125,4 +133,4 @@ def recover_dataset(picfolder):
         img = imread(picfolder+pic, IMREAD_GRAYSCALE)
         digits = get_grid(img, 'a', 'b', no_predict=True)
         res.append(digits)
-    return np.asarray(res).reshape(8100,28,28)
+    return np.asarray(res).reshape(81*len(pics),28,28)

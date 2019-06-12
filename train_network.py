@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-''' Train the network using augmented MNIST without zeros, saves the model and weights '''
+''' Train the network using provided images and their "translation" in a form of a matrix '''
 from __future__ import print_function
 import keras
 from keras.datasets import mnist
@@ -13,10 +13,18 @@ from tools import recover_dataset
 
 if __name__ == "__main__":
     import sys
+    import argparse
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('model', help='Name of the model to save as <model>.json and <model>.h5')
+    parser.add_argument('picfolder', help='Folder with images of sudoku grids to train on')
+    parser.add_argument('data', help='The values of the sudoku grid as a saved numpy matrix file')
+    parser.add_argument('--epochs', help='Number of epochs, default is 2', type=int)
+    args = parser.parse_args()
+
     # x, y = generate_dataset(8100)
-    x = recover_dataset('data1/')
-    y = np.loadtxt('data1.csv', delimiter=',').astype(int).reshape(8100)
-    break_point = 7000
+    x = recover_dataset(args.picfolder)
+    y = np.loadtxt(args.data, delimiter=',').astype(int).reshape(81000)
+    break_point = 70000
     x_train = x[:break_point]
     x_test = x[break_point:]
     y_train = y[:break_point]
@@ -26,7 +34,10 @@ if __name__ == "__main__":
 
     batch_size = 128
     num_classes = 9 # Because we have no zeros
-    epochs = 10
+    if args.epochs is not None:
+        epochs = args.epochs
+    else:
+        epochs = 10
 
     # input image dimensions
     img_rows, img_cols = 28, 28
@@ -70,7 +81,6 @@ if __name__ == "__main__":
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
     model_json = model.to_json()
-    model_name = 'models/' +  sys.argv[1]
-    with open(model_name + ".json", "w") as json_file:
+    with open(args.model + ".json", "w") as json_file:
         json_file.write(model_json)
-    model.save_weights(model_name + ".h5")
+    model.save_weights(args.model + ".h5")

@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+''' The main function '''
 from solver import Board
 from image_recognition import get_grid
 from keras.models import model_from_json
@@ -6,8 +7,6 @@ from cv2 import imread, IMREAD_GRAYSCALE
 from tools import solution_img, draw_matrix
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
-from train_network import generate_dataset
-
 import sys
 import argparse
 
