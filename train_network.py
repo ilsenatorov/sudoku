@@ -20,7 +20,7 @@ if __name__ == "__main__":
     parser.add_argument('data', help='The values of the sudoku grid as a saved numpy matrix file')
     parser.add_argument('--epochs', help='Number of epochs, default is 2', type=int)
     args = parser.parse_args()
-
+    # TODO remove hardcoded values for number of samples
     # x, y = generate_dataset(8100)
     x = recover_dataset(args.picfolder)
     y = np.loadtxt(args.data, delimiter=',').astype(int).reshape(81000)

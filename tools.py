@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from PIL import Image, ImageFont, ImageDraw
 from cv2 import imread, IMREAD_GRAYSCALE
-from random import randint
+from random import randint, choice
 import numpy as np
 from solver import Board
 from image_recognition import get_grid
@@ -48,11 +48,12 @@ def draw_matrix(grid, name=False, size=450, frame=False, font=font):
     for i in range(9):
         for j in range(9):
             item = grid[i,j]
-            x = i*step_size + 10
-            y = j*step_size + 5
+            w, h = draw.textsize(str(item), font=font)
+            x = i*step_size + (50-w)/2
+            y = j*step_size + (50-h)/2
             if item == 0:
                 item = ' '
-            draw.text((x,y),str(item), font=font, fill=(0,0,0))
+            draw.text((x,y), str(item), font=font, fill=(0,0,0))
     if frame:
         newimg = Image.new(mode='L', size=(size+13, size+13), color=255)
         newimg.paste(image, (5,5))
@@ -109,17 +110,19 @@ def generate_dataset(number):
         y_train[i] = y
     return x_train.reshape(number, 28, 28), y_train
 
-def save_generated_dataset(folder, number, font=font):
+def save_generated_dataset(folder, number, randfont=True):
     ''' Save <number> of pictures in the given <folder>s orig subfolder and data as data.csv '''
     y = np.zeros((number, 81), int)
     for i in range(number):
         picname = folder + 'orig/grid' + str(i).zfill(4) + '.png'
         B = Board(9)
         grid = B.solution()
-        if i % 2 == 1:
-            draw_matrix(grid, picname, frame=True, font=ImageFont.truetype('fonts/arial.ttf', size=45))
+        fonts = ['arial.ttf', 'arialbd.ttf', 'APHont-Regular_q15c.ttf', 'APHont-Bold_q15c.ttf', 'Hack.ttf', 'DejaVuSansMono-Bold.ttf', 'DroidSerif-Regular.ttf', 'OpenSans-Bold.ttf']
+        if randfont:
+            font = ImageFont.truetype('fonts/' + choice(fonts), size=45)
         else:
-            draw_matrix(grid, picname, frame=True, font=font)
+            font = ImageFont.truetype('fonts/APHont-Regular_q15c.ttf', size=45)
+        draw_matrix(grid, picname, frame=True, font=font)
         y[i] = grid.reshape(81)
     np.savetxt(folder+'data.csv', y, delimiter=',', fmt='%d')
 
