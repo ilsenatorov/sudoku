@@ -6,11 +6,8 @@
 ~*
 *.log
 *.png
-*.json
-*.h5
 fonts/
 pics/
-models/
 *.ipynb
 *.jpg
 *.jpeg
