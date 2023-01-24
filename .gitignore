@@ -1,14 +1,4 @@
 .*
+__*__
 !.gitignore
-*cache*
-*.gz
-*.zip
-~*
-*.log
-*.png
-fonts/
-pics/
-*.ipynb
-*.jpg
-*.jpeg
-*.csv
+
